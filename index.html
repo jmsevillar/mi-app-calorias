@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi App</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <main class="app">
+
+        <!-- LOGIN -->
+        <section id="login-screen">
+            <h1>Mi App</h1>
+            <p>Entra en tu cuenta</p>
+
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="password" placeholder="Contraseña">
+
+            <button id="login-button">Iniciar sesión</button>
+            <button id="register-button">Crear cuenta</button>
+
+            <p id="auth-message"></p>
+        </section>
+
+
+        <!-- APP -->
+        <section id="app-screen" hidden>
+
+<header class="app-header">
+
+    <div class="app-header-info">
+
+        <div class="header-date-row">
+            <h1 id="current-date"></h1>
+
+            <button id="logout-button">
+                Salir
+            </button>
+        </div>
+
+        <div class="header-second-row">
+
+            <p id="user-email"></p>
+
+            <div class="header-weight">
+
+                <span class="header-weight-label">
+                    Peso
+                </span>
+
+                <div class="header-weight-value">
+                    <strong id="current-weight">0</strong>
+                    <span>kg</span>
+
+                    <button
+                        id="edit-weight-button"
+                        class="edit-weight-button"
+                        title="Editar peso"
+                        aria-label="Editar peso"
+                    >
+                        ✏️
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+
+
+
+
+
+
+<!-- CALORÍAS -->
+<div class="calorie-card">
+
+    <p>Calorías de hoy</p>
+
+    <div class="calorie-number">
+        <strong id="consumed-calories">0</strong>
+        <span>/ <span id="daily-goal">2000</span> kcal</span>
+    </div>
+
+    <div class="progress-bar">
+        <div id="progress-fill"></div>
+    </div>
+
+    <p id="remaining-calories">Te quedan 2000 kcal</p>
+
+
+    <div class="weekly-calories">
+
+        <p>Últimos 7 días</p>
+
+        <div class="calorie-number">
+            <strong id="weekly-calories">0 / 14000 kcal</strong>
+        </div>
+
+    </div>
+
+</div>
+
+
+
+
+            <!-- ACCIONES -->
+            <div class="actions">
+
+                <button id="add-meal-button">
+                    + Añadir comida
+                </button>
+
+                <button id="add-workout-button">
+                    + Añadir entrenamiento
+                </button>
+
+            </div>
+
+
+<!-- COMIDAS -->
+<div class="section-card">
+
+    <h2>Comidas de hoy</h2>
+
+
+    <div id="meal-form" hidden>
+
+        <input
+            type="text"
+            id="meal-name"
+            placeholder="Nombre de la comida"
+        >
+
+        <input
+            type="number"
+            id="meal-calories"
+            placeholder="Calorías"
+            min="0"
+        >
+
+        <button id="save-meal-button">
+            Guardar comida
+        </button>
+
+        <button id="cancel-meal-button">
+            Cancelar
+        </button>
+
+        <p id="meal-message"></p>
+
+    </div>
+
+    <div id="meals-list">
+        <p>No has añadido comidas todavía.</p>
+    </div>
+
+</div>
+
+<!-- MIS COMIDAS -->
+<div class="section-card">
+
+    <h2>Mis comidas</h2>
+
+    <button id="create-meal-template-button">
+        + Crear comida
+    </button>
+
+    <div id="meal-template-form" hidden>
+
+        <input
+            type="text"
+            id="template-meal-name"
+            placeholder="Ej: Pollo con arroz"
+        >
+
+        <input
+            type="number"
+            id="template-meal-calories"
+            placeholder="Calorías"
+            min="0"
+        >
+
+        <button id="save-meal-template-button">
+            Guardar
+        </button>
+
+        <button id="cancel-meal-template-button">
+            Cancelar
+        </button>
+
+        <p id="meal-template-message"></p>
+
+    </div>
+
+    <div id="meal-templates-list">
+        <p>No tienes comidas guardadas.</p>
+    </div>
+
+</div>
+
+
+
+
+<!-- ENTRENAMIENTOS -->
+
+<div class="section-card">
+
+    <h2>Entrenamientos</h2>
+
+
+
+<div id="workout-form" hidden>
+
+    <h3>Nuevo entrenamiento</h3>
+
+    <label for="workout-type">
+        Tipo de entrenamiento
+    </label>
+
+    <select id="workout-type">
+        <option value="">Selecciona un tipo</option>
+        <option value="Gimnasio">🏋️ Gimnasio</option>
+        <option value="Fútbol">⚽ Fútbol</option>
+        <option value="Pádel">🎾 Pádel</option>
+        <option value="Correr">🏃 Correr</option>
+    </select>
+
+
+    <!-- GIMNASIO -->
+
+    <div id="gym-form" hidden>
+
+        <label for="gym-template">
+            Rutina
+        </label>
+
+        <select id="gym-template">
+            <option value="">Selecciona una rutina</option>
+        </select>
+
+        <div id="gym-exercises">
+        </div>
+
+    </div>
+
+
+    <!-- OTROS ENTRENAMIENTOS -->
+
+    <div id="other-workout-form">
+
+        <input
+            type="number"
+            id="workout-duration"
+            placeholder="Duración (minutos)"
+            min="0"
+        >
+
+        <input
+            type="text"
+            id="workout-notes"
+            placeholder="Notas (opcional)"
+        >
+
+    </div>
+
+
+    <button id="save-workout-button">
+        Guardar entrenamiento
+    </button>
+
+    <button id="cancel-workout-button">
+        Cancelar
+    </button>
+
+    <p id="workout-message"></p>
+
+</div>
+
+
+    <div id="workouts-list">
+        <p>No has añadido entrenamientos todavía.</p>
+    </div>
+
+</div>
+
+
+    </main>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
+
+</body>
+</html>

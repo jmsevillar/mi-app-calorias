@@ -1,0 +1,690 @@
+/* =====================================================
+   ESTILO GENERAL
+   ===================================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    background: #f3faf6;
+    color: #234236;
+}
+
+.app {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+
+/* =====================================================
+   TÍTULOS Y TEXTOS
+   ===================================================== */
+
+h1,
+h2,
+h3 {
+    color: #234236;
+}
+
+h1 {
+    margin: 0;
+}
+
+h2 {
+    margin-top: 0;
+}
+
+p {
+    color: #557064;
+}
+
+
+/* =====================================================
+   CABECERA
+   ===================================================== */
+
+.app-header {
+    margin-bottom: 20px;
+}
+
+.app-header-info {
+    min-width: 0;
+}
+
+
+/* =====================================================
+   FILA DE FECHA Y SALIR
+   ===================================================== */
+
+.header-date-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.app-header h1 {
+    margin: 0;
+}
+
+
+/* =====================================================
+   FILA DE CORREO Y PESO
+   ===================================================== */
+
+.header-second-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.app-header p {
+    margin: 5px 0 0;
+    font-size: 14px;
+}
+
+
+/* =====================================================
+   BOTÓN SALIR
+   ===================================================== */
+
+#logout-button {
+    width: auto;
+    min-width: 48px;
+    min-height: 28px;
+    height: 28px;
+    margin: 0;
+    padding: 4px 9px;
+    border-radius: 7px;
+    font-size: 12px;
+    line-height: 1;
+}
+
+
+/* =====================================================
+   PESO EN LA CABECERA
+   ===================================================== */
+
+.header-weight {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.header-weight-label {
+    font-size: 13px;
+    color: #557064;
+    margin-bottom: 2px;
+}
+
+.header-weight-value {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.header-weight-value strong {
+    font-size: 20px;
+    color: #234236;
+}
+
+.header-weight-value span {
+    font-size: 14px;
+    color: #557064;
+}
+
+
+/* =====================================================
+   BOTÓN EDITAR PESO
+   ===================================================== */
+
+.edit-weight-button {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    min-height: 28px;
+    margin: 0 0 0 3px;
+    padding: 0;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e2f1e8;
+    color: #198754;
+    border: none;
+    font-size: 14px;
+    line-height: 1;
+}
+
+.edit-weight-button:hover {
+    background: #cfe8da;
+}
+
+
+
+/* =====================================================
+   TARJETAS
+   ===================================================== */
+
+.calorie-card,
+.section-card {
+    background: #ffffff;
+    border: 1px solid #cfe8da;
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 16px;
+}
+
+
+/* =====================================================
+   CALORÍAS
+   ===================================================== */
+
+.calorie-card > p:first-child {
+    margin-top: 0;
+    font-weight: 600;
+    color: #557064;
+}
+
+.calorie-number {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin: 8px 0 14px;
+}
+
+.calorie-number strong {
+    font-size: 30px;
+    color: #234236;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 12px;
+    background: #e2f1e8;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+#progress-fill {
+    height: 100%;
+    width: 0;
+    background: #22a06b;
+    border-radius: 20px;
+    transition: width 0.3s ease;
+}
+
+#remaining-calories {
+    margin-bottom: 0;
+}
+
+.weekly-calories {
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid #e1eee6;
+}
+
+.weekly-calories p {
+    margin-top: 0;
+    font-weight: 600;
+}
+
+.weekly-calories .calorie-number {
+    margin-bottom: 0;
+}
+
+.weekly-calories .calorie-number strong {
+    font-size: 24px;
+}
+
+
+/* =====================================================
+   BOTONES
+   ===================================================== */
+
+button {
+    width: 100%;
+    min-height: 44px;
+    margin: 6px 0;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 10px;
+    background: #22a06b;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #198754;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+
+/* =====================================================
+   ACCIONES PRINCIPALES
+   ===================================================== */
+
+.actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.actions button {
+    margin: 0;
+    min-height: 52px;
+    font-size: 17px;
+}
+
+
+/* =====================================================
+   FORMULARIOS
+   ===================================================== */
+
+input,
+select {
+    width: 100%;
+    min-height: 44px;
+    margin: 6px 0;
+    padding: 10px 12px;
+    border: 1px solid #cfe8da;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #234236;
+    font-size: 16px;
+}
+
+input:focus,
+select:focus {
+    outline: 2px solid #8bd3ad;
+    border-color: #22a06b;
+}
+
+
+/* =====================================================
+   COMIDAS DE HOY
+   ===================================================== */
+
+.meal-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #e1eee6;
+}
+
+.meal-item:last-child {
+    border-bottom: none;
+}
+
+.meal-item > div {
+    min-width: 0;
+}
+
+.meal-item div div {
+    margin-top: 4px;
+    font-size: 14px;
+    color: #6b8177;
+}
+
+
+/* =====================================================
+   BOTONES DE COMIDAS
+   ===================================================== */
+
+.meal-actions {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.edit-meal-button,
+.delete-meal-button,
+.delete-meal-template-button,
+.delete-meal-entry-button {
+    width: 30px;
+    height: 30px;
+    min-height: 30px;
+    margin: 0;
+    padding: 0;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.edit-meal-button {
+    background: #e2f1e8;
+    color: #198754;
+    font-size: 15px;
+}
+
+.edit-meal-button:hover {
+    background: #cfe8da;
+}
+
+.delete-meal-button,
+.delete-meal-template-button,
+.delete-meal-entry-button {
+    background: #f1f5f3;
+    color: #557064;
+    border: 1px solid #dce8e1;
+    font-size: 16px;
+}
+
+.delete-meal-button:hover,
+.delete-meal-template-button:hover,
+.delete-meal-entry-button:hover {
+    background: #e6eeea;
+}
+
+
+
+.edit-meal-button,
+.delete-meal-button,
+.delete-meal-template-button {
+    width: 38px;
+    height: 38px;
+    min-height: 38px;
+    margin: 0;
+    padding: 0;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 20px;
+    line-height: 1;
+}
+
+.edit-meal-button {
+    background: #e2f1e8;
+    color: #198754;
+}
+
+.edit-meal-button:hover {
+    background: #cfe8da;
+}
+
+.delete-meal-button,
+.delete-meal-template-button {
+    background: #f1f5f3;
+    color: #557064;
+    border: 1px solid #dce8e1;
+    font-size: 24px;
+}
+
+.delete-meal-button:hover,
+.delete-meal-template-button:hover {
+    background: #e6eeea;
+}
+
+
+/* =====================================================
+   MIS COMIDAS
+   ===================================================== */
+
+#meal-templates-list {
+    margin-top: 12px;
+}
+
+.meal-template-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #e1eee6;
+}
+
+.meal-template-item:last-child {
+    border-bottom: none;
+}
+
+.meal-template-item > div:first-child {
+    min-width: 0;
+    flex: 1;
+}
+
+.meal-template-item > div:first-child div {
+    margin-top: 4px;
+    font-size: 14px;
+    color: #6b8177;
+}
+
+
+/* =====================================================
+   BOTONES DE MIS COMIDAS
+   ===================================================== */
+
+.meal-template-actions {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.meal-template-actions button {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    min-height: 30px;
+    margin: 0;
+    padding: 0;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 14px;
+    line-height: 1;
+}
+
+
+/* =====================================================
+   BOTÓN AÑADIR DE MIS COMIDAS
+   ===================================================== */
+
+.meal-template-actions .use-meal-button {
+    background: #e2f1e8;
+    color: #198754;
+    border: none;
+}
+
+.meal-template-actions .use-meal-button:hover {
+    background: #cfe8da;
+}
+
+
+/* =====================================================
+   BOTÓN EDITAR DE MIS COMIDAS
+   ===================================================== */
+
+.meal-template-actions .edit-meal-button {
+    background: #e2f1e8;
+    color: #198754;
+    border: none;
+}
+
+.meal-template-actions .edit-meal-button:hover {
+    background: #cfe8da;
+}
+
+
+/* =====================================================
+   BOTÓN ELIMINAR DE MIS COMIDAS
+   ===================================================== */
+
+.meal-template-actions .delete-meal-button {
+    background: #f1f5f3;
+    color: #557064;
+    border: 1px solid #dce8e1;
+    font-size: 16px;
+}
+
+.meal-template-actions .delete-meal-button:hover {
+    background: #e6eeea;
+}
+
+
+
+
+
+/* =====================================================
+   BOTÓN CREAR COMIDA
+   ===================================================== */
+
+#create-meal-template-button {
+    width: auto;
+    min-height: 38px;
+    padding: 8px 12px;
+    margin: 4px 0 12px;
+    font-size: 14px;
+}
+
+
+/* =====================================================
+   ENTRENAMIENTOS
+   ===================================================== */
+
+.workout-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #e1eee6;
+}
+
+.workout-item:last-child {
+    border-bottom: none;
+}
+
+.workout-item > div {
+    min-width: 0;
+}
+
+.workout-item div div {
+    margin-top: 4px;
+    font-size: 14px;
+    color: #6b8177;
+}
+
+.workout-actions {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+/* =====================================================
+   SERIES DEL GIMNASIO
+   ===================================================== */
+
+.gym-set-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.gym-set-row span {
+    width: 58px;
+    flex-shrink: 0;
+    font-size: 13px;
+    color: #557064;
+}
+
+.gym-set-row input {
+    width: 70px;
+    min-width: 0;
+    height: 36px;
+    margin: 0;
+    padding: 6px 8px;
+    font-size: 14px;
+}
+
+
+
+.edit-workout-button,
+.delete-workout-button {
+    width: 38px;
+    height: 38px;
+    min-height: 38px;
+    margin: 0;
+    padding: 0;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.edit-workout-button {
+    background: #e2f1e8;
+    color: #198754;
+}
+
+.edit-workout-button:hover {
+    background: #cfe8da;
+}
+
+.delete-workout-button {
+    background: #f1f5f3;
+    color: #557064;
+    border: 1px solid #dce8e1;
+    font-size: 24px;
+}
+
+.delete-workout-button:hover {
+    background: #e6eeea;
+}
+
+
+/* =====================================================
+   EJERCICIOS DE GIMNASIO
+   ===================================================== */
+
+.gym-exercise {
+    margin-top: 18px;
+    padding: 14px;
+    background: #f6fbf8;
+    border: 1px solid #dceee3;
+    border-radius: 12px;
+}
+
+.gym-exercise strong {
+    display: block;
+    margin-bottom: 4px;
+    color: #234236;
+}
+
+.gym-exercise > div {
+    color: #6b8177;
+   
+
