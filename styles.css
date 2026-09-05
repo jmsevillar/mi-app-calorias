@@ -688,3 +688,38 @@ select:focus {
     color: #6b8177;
    
 
+.save-gym-set-button {
+    width: 30px;
+    height: 30px;
+	min-height: 30px;
+	min-width: 30px;
+	margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+	background: #e2f1e8;
+	color: #198754;
+	front-size: 14px;
+	line-height: 1;
+    cursor: pointer;
+    font-size: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+	flex-shrink: 0;
+}
+
+.save-gym-set-button:hover{
+	background: #cfe8da;
+	
+}
+
+.save-gym-set-button:active {
+    transform: scale(0.95);
+}
+
+
+.save-gym-set-button:disabled {
+    opacity: 0.6;
+    cursor: default;
+}

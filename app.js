@@ -237,7 +237,8 @@ async function loadGymExercises() {
 
     // Mostrar mensaje mientras cargamos
 
-    gymExercises.innerHTML = "<p>Cargando ejercicios...</p>";
+    gymExercises.innerHTML =
+        "<p>Cargando ejercicios...</p>";
 
 
     // Buscar los ejercicios de esa rutina
@@ -247,7 +248,9 @@ async function loadGymExercises() {
             .from("workout_exercises")
             .select("*")
             .eq("workout_template_id", templateId)
-            .order("exercise_order", { ascending: true });
+            .order("exercise_order", {
+                ascending: true
+            });
 
 
     // Comprobar si hubo algún error
@@ -255,7 +258,7 @@ async function loadGymExercises() {
     if (error) {
 
         console.error(
-            "Error cargando ejercicios:",
+            "Error cargando los ejercicios:",
             error
         );
 
@@ -284,92 +287,213 @@ async function loadGymExercises() {
 
     // Mostrar cada ejercicio
 
-    
-exercises.forEach(exercise => {
+    exercises.forEach(exercise => {
 
-    const item = document.createElement("div");
+        const item =
+            document.createElement("div");
 
-    item.className = "gym-exercise";
-
-    const targetText =
-        exercise.target_sets &&
-        exercise.target_reps_min &&
-        exercise.target_reps_max
-            ? `${exercise.target_sets} series · ${exercise.target_reps_min}-${exercise.target_reps_max} reps`
-            : exercise.target_sets
-                ? `${exercise.target_sets} series`
-                : "Sin objetivo definido";
+        item.className =
+            "gym-exercise";
 
 
-    item.innerHTML = `
-        <strong>
-            ${escapeHtml(exercise.exercise_name)}
-        </strong>
+        // Texto del objetivo
 
-        <div>
-            ${targetText}
-        </div>
-
-        <div class="gym-sets">
-        </div>
-    `;
+        const targetText =
+            exercise.target_sets &&
+            exercise.target_reps_min &&
+            exercise.target_reps_max
+                ? `${exercise.target_sets} series · ${exercise.target_reps_min}-${exercise.target_reps_max} reps`
+                : exercise.target_sets
+                    ? `${exercise.target_sets} series`
+                    : "Sin objetivo definido";
 
 
-    const setsContainer =
-        item.querySelector(".gym-sets");
+        // Crear el ejercicio
+
+        item.innerHTML = `
+            <strong>
+                ${escapeHtml(exercise.exercise_name)}
+            </strong>
+
+            <div>
+                ${targetText}
+            </div>
+
+            <div class="gym-sets">
+            </div>
+        `;
 
 
-    // Crear las series indicadas por la rutina
-
-    const numberOfSets =
-        exercise.target_sets || 1;
+        const setsContainer =
+            item.querySelector(".gym-sets");
 
 
- // =====================================================
-// CREAR FILAS DE SERIES
-// =====================================================
+        // Número de series indicadas por la rutina
 
-for (let i = 1; i <= numberOfSets; i++) {
-
-    const setRow =
-        document.createElement("div");
-
-    setRow.className = "gym-set-row";
-
-    setRow.innerHTML = `
-        <span>
-            Serie ${i}
-        </span>
-
-        <input
-            type="number"
-            class="gym-weight"
-            placeholder="kg"
-            min="0"
-            step="0.5"
-        >
-
-        <input
-            type="number"
-            class="gym-reps"
-            placeholder="reps"
-            min="0"
-        >
-    `;
-
-    setsContainer.appendChild(setRow);
-}
+        const numberOfSets =
+            exercise.target_sets || 1;
 
 
+        // =====================================================
+        // CREAR FILAS DE SERIES
+        // =====================================================
+
+        for (
+            let i = 1;
+            i <= numberOfSets;
+            i++
+        ) {
+
+            const setRow =
+                document.createElement("div");
+
+            setRow.className =
+                "gym-set-row";
 
 
-    gymExercises.appendChild(item);
-});
+            // Guardamos información de la serie
+
+            setRow.dataset.exerciseName =
+                exercise.exercise_name;
+
+            setRow.dataset.setNumber =
+                i;
 
 
-	
-	
-	
+            // Crear contenido de la fila
+
+            setRow.innerHTML = `
+                <span>
+                    Serie ${i}
+                </span>
+
+                <input
+                    type="number"
+                    class="gym-weight"
+                    placeholder="kg"
+                    min="0"
+                    step="0.5"
+                >
+
+                <input
+                    type="number"
+                    class="gym-reps"
+                    placeholder="reps"
+                    min="0"
+                >
+
+<button
+    type="button"
+    class="save-gym-set-button"
+    title="Guardar serie"
+    aria-label="Guardar serie"
+>
+    💾
+</button>
+            `;
+
+
+            // Añadir la fila al ejercicio
+
+            setsContainer.appendChild(
+                setRow
+            );
+        }
+
+
+        // Añadir el ejercicio a la pantalla
+
+        gymExercises.appendChild(
+            item
+        );
+    });
+
+
+    // =====================================================
+    // BOTONES GUARDAR SERIE
+    // =====================================================
+
+    document
+        .querySelectorAll(".save-gym-set-button")
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                async () => {
+
+                    // Buscar la fila de esta serie
+
+                    const setRow =
+                        button.closest(
+                            ".gym-set-row"
+                        );
+
+                    if (!setRow) {
+                        return;
+                    }
+
+
+                    // Obtener información de la serie
+
+                    const exerciseName =
+                        setRow.dataset.exerciseName;
+
+                    const setNumber =
+                        Number(
+                            setRow.dataset.setNumber
+                        );
+
+
+                    // Obtener los campos
+
+                    const weightInput =
+                        setRow.querySelector(
+                            ".gym-weight"
+                        );
+
+                    const repsInput =
+                        setRow.querySelector(
+                            ".gym-reps"
+                        );
+
+
+                    // Obtener valores
+
+                    const weight =
+                        weightInput.value;
+
+                    const reps =
+                        repsInput.value;
+
+
+                    // Mostrar temporalmente que se ha pulsado
+
+                    button.textContent = "⏳";
+
+
+                    console.log(
+                        "Serie seleccionada:",
+                        {
+                            exerciseName,
+                            setNumber,
+                            weight,
+                            reps
+                        }
+                    );
+
+
+                    // De momento NO guardamos en Supabase.
+                    // Esto lo haremos en el siguiente paso.
+
+                    setTimeout(() => {
+
+                        button.textContent = "✓";
+
+                    }, 500);
+                }
+            );
+
+        });
 }
 
 
@@ -2310,30 +2434,32 @@ item.innerHTML = `
 
     <div class="meal-template-actions">
 
-<button
-    class="use-meal-button"
-    title="Añadir"
-    aria-label="Añadir"
->
-    ➕
-</button>
+        <button
+            class="use-meal-button"
+            title="Añadir"
+            aria-label="Añadir"
+            data-id="${template.id}"
+        >
+            ➕
+        </button>
 
-<button
-    class="edit-meal-button"
-    title="Editar"
-    aria-label="Editar"
->
-    ✏️
-</button>
+        <button
+            class="edit-meal-button"
+            title="Editar"
+            aria-label="Editar"
+            data-id="${template.id}"
+        >
+            ✏️
+        </button>
 
-<button
-    class="delete-meal-button"
-    title="Eliminar"
-    aria-label="Eliminar"
->
-    🗑️
-</button>
-
+        <button
+            class="delete-meal-button"
+            title="Eliminar"
+            aria-label="Eliminar"
+            data-id="${template.id}"
+        >
+            🗑️
+        </button>
 
     </div>
 `;
