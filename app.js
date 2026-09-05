@@ -141,7 +141,9 @@ async function loadWorkoutTypes() {
 
 async function loadGymTemplates() {
 
-    // Obtener el usuario actualmente conectado
+    // -------------------------------------------------
+    // 1. OBTENER EL USUARIO ACTUAL
+    // -------------------------------------------------
 
     const {
         data: { user }
@@ -150,21 +152,25 @@ async function loadGymTemplates() {
     if (!user) return;
 
 
-    // Buscar el tipo de entrenamiento "Gimnasio"
+    // -------------------------------------------------
+    // 2. BUSCAR EL TIPO DE ENTRENAMIENTO "GIMNASIO"
+    // -------------------------------------------------
 
-    const { data: gymType, error: gymTypeError } =
-        await supabaseClient
-            .from("workout_types")
-            .select("id")
-            .eq("user_id", user.id)
-            .eq("name", "Gimnasio")
-            .single();
+    const {
+        data: gymType,
+        error: gymTypeError
+    } = await supabaseClient
+        .from("workout_types")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("name", "Gimnasio")
+        .single();
 
 
     if (gymTypeError) {
 
         console.error(
-            "Error buscando tipo Gimnasio:",
+            "Error buscando el tipo Gimnasio:",
             gymTypeError
         );
 
@@ -172,21 +178,39 @@ async function loadGymTemplates() {
     }
 
 
-    // Buscar las rutinas de gimnasio del usuario
+    // -------------------------------------------------
+    // 3. BUSCAR LAS RUTINAS DEL USUARIO
+    // -------------------------------------------------
+    //
+    // Aquí buscamos únicamente las rutinas de gimnasio
+    // pertenecientes al usuario conectado.
+    //
+    // Ejemplos:
+    // GYM A
+    // GYM B
+    // GYM Pierna
+    // GYM Pecho
+    //
+    // Las ordenamos alfabéticamente.
+    // -------------------------------------------------
 
-    const { data: templates, error: templatesError } =
-        await supabaseClient
-            .from("workout_templates")
-            .select("id, name")
-            .eq("user_id", user.id)
-            .eq("workout_type_id", gymType.id)
-            .order("name", { ascending: true });
+    const {
+        data: templates,
+        error: templatesError
+    } = await supabaseClient
+        .from("workout_templates")
+        .select("id, name")
+        .eq("user_id", user.id)
+        .eq("workout_type_id", gymType.id)
+        .order("name", {
+            ascending: true
+        });
 
 
     if (templatesError) {
 
         console.error(
-            "Error cargando rutinas de gimnasio:",
+            "Error cargando las rutinas de gimnasio:",
             templatesError
         );
 
@@ -194,27 +218,53 @@ async function loadGymTemplates() {
     }
 
 
-    // Limpiar el selector antes de cargar las rutinas
+    // -------------------------------------------------
+    // 4. LIMPIAR EL SELECTOR
+    // -------------------------------------------------
+    //
+    // Eliminamos las rutinas que pudiera haber
+    // anteriormente en el desplegable.
+    // -------------------------------------------------
 
     gymTemplate.innerHTML = `
-        <option value="">Selecciona una rutina</option>
+        <option value="">
+            Selecciona una rutina
+        </option>
     `;
 
 
-    // Añadir cada rutina al selector
+    // -------------------------------------------------
+    // 5. AÑADIR LAS RUTINAS AL DESPLEGABLE
+    // -------------------------------------------------
+    //
+    // Cada rutina tendrá:
+    //
+    // value = ID de Supabase
+    // texto = nombre de la rutina
+    // -------------------------------------------------
 
     templates.forEach(template => {
 
-        const option = document.createElement("option");
+        const option =
+            document.createElement("option");
 
-        option.value = template.id;
-        option.textContent = template.name;
 
-        gymTemplate.appendChild(option);
+        // Guardar el ID de la rutina
+        option.value =
+            template.id;
+
+
+        // Mostrar el nombre de la rutina
+        option.textContent =
+            template.name;
+
+
+        // Añadir la rutina al selector
+        gymTemplate.appendChild(
+            option
+        );
     });
 }
-
-
 // =====================================================
 // CARGAR EJERCICIOS DE LA RUTINA DE GIMNASIO
 // =====================================================
@@ -382,14 +432,14 @@ async function loadGymExercises() {
                     min="0"
                 >
 
-<button
-    type="button"
-    class="save-gym-set-button"
-    title="Guardar serie"
-    aria-label="Guardar serie"
->
-    💾
-</button>
+                <button
+                    type="button"
+                    class="save-gym-set-button"
+                    title="Guardar serie"
+                    aria-label="Guardar serie"
+                >
+                    💾
+                </button>
             `;
 
 
@@ -410,7 +460,7 @@ async function loadGymExercises() {
 
 
     // =====================================================
-    // BOTONES GUARDAR SERIE
+    // BOTONES PARA GUARDAR CADA SERIE INDIVIDUALMENTE
     // =====================================================
 
     document
@@ -459,43 +509,515 @@ async function loadGymExercises() {
 
                     // Obtener valores
 
-                    const weight =
-                        weightInput.value;
+                    const weightValue =
+                        weightInput.value.trim();
 
-                    const reps =
-                        repsInput.value;
+                    const repsValue =
+                        repsInput.value.trim();
 
 
-                    // Mostrar temporalmente que se ha pulsado
+                    // Comprobar que hay algún dato
+
+                    if (!weightValue && !repsValue) {
+
+                        alert(
+                            "Introduce el peso o las repeticiones antes de guardar."
+                        );
+
+                        return;
+                    }
+
+
+                    // Evitar pulsaciones mientras se está guardando
+
+                    if (button.dataset.saving === "true") {
+                        return;
+                    }
+
+                    button.dataset.saving = "true";
+
+                    button.disabled = true;
 
                     button.textContent = "⏳";
 
 
-                    console.log(
-                        "Serie seleccionada:",
-                        {
-                            exerciseName,
-                            setNumber,
-                            weight,
-                            reps
+                    try {
+
+                        // Obtener usuario conectado
+
+                        const {
+                            data: { user }
+                        } = await supabaseClient.auth.getUser();
+
+
+                        if (!user) {
+
+                            alert(
+                                "No hay ningún usuario conectado."
+                            );
+
+                            return;
                         }
-                    );
 
 
-                    // De momento NO guardamos en Supabase.
-                    // Esto lo haremos en el siguiente paso.
+                        // Obtener la rutina seleccionada
 
-                    setTimeout(() => {
+                        const templateId =
+                            gymTemplate.value;
+
+
+                        if (!templateId) {
+
+                            alert(
+                                "Selecciona una rutina de gimnasio."
+                            );
+
+                            return;
+                        }
+
+
+                        // =====================================================
+                        // BUSCAR EL ENTRENAMIENTO DE HOY
+                        // =====================================================
+
+                        const now = new Date();
+
+                        const startOfDay = new Date(
+                            now.getFullYear(),
+                            now.getMonth(),
+                            now.getDate()
+                        );
+
+                        const startOfTomorrow = new Date(
+                            now.getFullYear(),
+                            now.getMonth(),
+                            now.getDate() + 1
+                        );
+
+
+                        const {
+                            data: todaySession,
+                            error: sessionError
+                        } =
+                            await supabaseClient
+                                .from("workout_sessions")
+                                .select("id")
+                                .eq(
+                                    "user_id",
+                                    user.id
+                                )
+                                .eq(
+                                    "workout_template_id",
+                                    Number(templateId)
+                                )
+                                .gte(
+                                    "started_at",
+                                    startOfDay.toISOString()
+                                )
+                                .lt(
+                                    "started_at",
+                                    startOfTomorrow.toISOString()
+                                )
+                                .order(
+                                    "started_at",
+                                    {
+                                        ascending: false
+                                    }
+                                )
+                                .limit(1)
+                                .maybeSingle();
+
+
+                        if (sessionError) {
+
+                            console.error(
+                                "Error buscando el entrenamiento de hoy:",
+                                sessionError
+                            );
+
+                            alert(
+                                "No se pudo encontrar el entrenamiento de hoy."
+                            );
+
+                            return;
+                        }
+
+
+                        // Si todavía no existe el entrenamiento
+
+                        if (!todaySession) {
+
+                            alert(
+                                "Primero guarda el entrenamiento de hoy con el botón principal."
+                            );
+
+                            return;
+                        }
+
+
+                        const sessionId =
+                            todaySession.id;
+
+
+                        // =====================================================
+                        // COMPROBAR SI ESTA SERIE YA EXISTE
+                        // =====================================================
+
+                        const {
+                            data: existingSet,
+                            error: existingSetError
+                        } =
+                            await supabaseClient
+                                .from("workout_sets")
+                                .select("id")
+                                .eq(
+                                    "workout_session_id",
+                                    sessionId
+                                )
+                                .eq(
+                                    "exercise_name",
+                                    exerciseName
+                                )
+                                .eq(
+                                    "set_number",
+                                    setNumber
+                                )
+                                .maybeSingle();
+
+
+                        if (existingSetError) {
+
+                            console.error(
+                                "Error comprobando la serie:",
+                                existingSetError
+                            );
+
+                            alert(
+                                "No se pudo comprobar la serie."
+                            );
+
+                            return;
+                        }
+
+
+                        // =====================================================
+                        // DATOS DE LA SERIE
+                        // =====================================================
+
+                        const setData = {
+
+                            workout_session_id:
+                                sessionId,
+
+                            exercise_name:
+                                exerciseName,
+
+                            set_number:
+                                setNumber,
+
+                            weight_kg:
+                                weightValue
+                                    ? Number(weightValue)
+                                    : null,
+
+                            repetitions:
+                                repsValue
+                                    ? Number(repsValue)
+                                    : null
+                        };
+
+
+                        // =====================================================
+                        // ACTUALIZAR O CREAR LA SERIE
+                        // =====================================================
+
+                        if (existingSet) {
+
+                            // La serie ya existe:
+                            // actualizar únicamente esa serie
+
+                            const {
+                                error: updateError
+                            } =
+                                await supabaseClient
+                                    .from("workout_sets")
+                                    .update({
+                                        weight_kg:
+                                            setData.weight_kg,
+
+                                        repetitions:
+                                            setData.repetitions
+                                    })
+                                    .eq(
+                                        "id",
+                                        existingSet.id
+                                    );
+
+
+                            if (updateError) {
+
+                                console.error(
+                                    "Error actualizando la serie:",
+                                    updateError
+                                );
+
+                                alert(
+                                    "No se pudo actualizar la serie."
+                                );
+
+                                return;
+                            }
+
+                        } else {
+
+                            // La serie no existe:
+                            // crear únicamente esta serie
+
+                            const {
+                                error: insertError
+                            } =
+                                await supabaseClient
+                                    .from("workout_sets")
+                                    .insert(
+                                        setData
+                                    );
+
+
+                            if (insertError) {
+
+                                console.error(
+                                    "Error guardando la serie:",
+                                    insertError
+                                );
+
+                                alert(
+                                    "No se pudo guardar la serie."
+                                );
+
+                                return;
+                            }
+                        }
+
+
+                        // =====================================================
+                        // GUARDADO CORRECTO
+                        // =====================================================
 
                         button.textContent = "✓";
 
-                    }, 500);
+                        button.classList.add(
+                            "saved"
+                        );
+
+                    } catch (error) {
+
+                        console.error(
+                            "Error guardando serie:",
+                            error
+                        );
+
+                        alert(
+                            "Ha ocurrido un error al guardar la serie."
+                        );
+
+                    } finally {
+
+                        button.dataset.saving = "false";
+
+                        button.disabled = false;
+
+                    }
+
                 }
             );
 
         });
 }
 
+
+ // =====================================================
+ // GUARDAR EJERCICIO DEL ENTRENAMIENTO DE HOY
+ // =====================================================
+
+async function saveGymExercise(exerciseItem) {
+
+    const {
+        data: { user }
+    } = await supabaseClient.auth.getUser();
+
+    if (!user) {
+        alert("No hay ningún usuario conectado.");
+        return;
+    }
+
+    const templateId = gymTemplate.value;
+
+    if (!templateId) {
+        alert("Selecciona una rutina de gimnasio.");
+        return;
+    }
+
+    const exerciseTitle =
+        exerciseItem.querySelector("strong");
+
+    if (!exerciseTitle) {
+        return;
+    }
+
+    const exerciseName =
+        exerciseTitle.textContent.trim();
+
+    // Buscar la sesión de hoy para esta rutina
+
+    const now = new Date();
+
+    const startOfDay = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate()
+    );
+
+    const startOfTomorrow = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() + 1
+    );
+
+    const { data: todaySession, error: sessionError } =
+        await supabaseClient
+            .from("workout_sessions")
+            .select("id")
+            .eq("user_id", user.id)
+            .eq("workout_template_id", Number(templateId))
+            .gte(
+                "started_at",
+                startOfDay.toISOString()
+            )
+            .lt(
+                "started_at",
+                startOfTomorrow.toISOString()
+            )
+            .order("started_at", {
+                ascending: false
+            })
+            .limit(1)
+            .maybeSingle();
+
+    if (sessionError) {
+        console.error(
+            "Error buscando el entrenamiento de hoy:",
+            sessionError
+        );
+
+        alert(
+            "No se pudo encontrar el entrenamiento de hoy."
+        );
+
+        return;
+    }
+
+    if (!todaySession) {
+        alert(
+            "Primero guarda el entrenamiento de hoy con el botón principal."
+        );
+
+        return;
+    }
+
+    const sessionId = todaySession.id;
+
+    // Eliminar únicamente las series de este ejercicio
+
+    const { error: deleteError } =
+        await supabaseClient
+            .from("workout_sets")
+            .delete()
+            .eq("workout_session_id", sessionId)
+            .eq("exercise_name", exerciseName);
+
+    if (deleteError) {
+        console.error(
+            "Error eliminando las series anteriores:",
+            deleteError
+        );
+
+        alert(
+            "No se pudieron actualizar las series."
+        );
+
+        return;
+    }
+
+    // Preparar las nuevas series
+
+    const rows =
+        exerciseItem.querySelectorAll(".gym-set-row");
+
+    const setsToSave = [];
+
+    rows.forEach((row, index) => {
+
+        const weightInput =
+            row.querySelector(".gym-weight");
+
+        const repsInput =
+            row.querySelector(".gym-reps");
+
+        const weightValue =
+            weightInput.value.trim();
+
+        const repsValue =
+            repsInput.value.trim();
+
+        // Una serie completamente vacía no se guarda
+
+        if (!weightValue && !repsValue) {
+            return;
+        }
+
+        setsToSave.push({
+            workout_session_id: sessionId,
+            exercise_name: exerciseName,
+            set_number: index + 1,
+            weight_kg:
+                weightValue
+                    ? Number(weightValue)
+                    : null,
+            repetitions:
+                repsValue
+                    ? Number(repsValue)
+                    : null
+        });
+    });
+
+    // Guardar las nuevas series
+
+    if (setsToSave.length > 0) {
+
+        const { error: insertError } =
+            await supabaseClient
+                .from("workout_sets")
+                .insert(setsToSave);
+
+        if (insertError) {
+
+            console.error(
+                "Error guardando el ejercicio:",
+                insertError
+            );
+
+            alert(
+                "No se pudo guardar el ejercicio."
+            );
+
+            return;
+        }
+    }
+
+    alert(
+        `${exerciseName} guardado correctamente.`
+    );
+}
 
 // =====================================================
 // CAMBIAR RUTINA DE GIMNASIO
