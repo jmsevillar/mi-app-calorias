@@ -1163,28 +1163,34 @@ async function loadLastGymSession() {
 
             // Rellenar peso
 
-            const weightInput =
-                row.querySelector(".gym-weight");
+// Mostrar peso de la sesión anterior como referencia
 
-            if (
-                weightInput &&
-                set.weight_kg !== null
-            ) {
-                weightInput.value = set.weight_kg;
-            }
+const weightInput =
+    row.querySelector(".gym-weight");
+
+if (
+    weightInput &&
+    set.weight_kg !== null
+) {
+    weightInput.placeholder =
+        `${set.weight_kg} kg`;
+}
 
 
-            // Rellenar repeticiones
 
-            const repsInput =
-                row.querySelector(".gym-reps");
+// Mostrar repeticiones de la sesión anterior como referencia
 
-            if (
-                repsInput &&
-                set.repetitions !== null
-            ) {
-                repsInput.value = set.repetitions;
-            }
+const repsInput =
+    row.querySelector(".gym-reps");
+
+if (
+    repsInput &&
+    set.repetitions !== null
+) {
+    repsInput.placeholder =
+        `${set.repetitions}`;
+}
+
 
         });
     });
