@@ -1042,159 +1042,150 @@ gymTemplate.addEventListener("change", async () => {
 
 async function loadLastGymSession() {
 
-    // Obtener usuario conectado
+const {
+data: { user }
+} = await supabaseClient.auth.getUser();
 
-    const {
-        data: { user }
-    } = await supabaseClient.auth.getUser();
+if (!user) return;
 
-    if (!user) return;
+const templateId = gymTemplate.value;
 
+if (!templateId) return;
 
-    // ID de la rutina seleccionada
+// Buscar únicamente sesiones anteriores a hoy
 
-    const templateId = gymTemplate.value;
+const now = new Date();
 
-    if (!templateId) return;
+const startOfToday = new Date(
+now.getFullYear(),
+now.getMonth(),
+now.getDate()
+);
 
+const {
+data: lastSession,
+error: sessionError
+} = await supabaseClient
+.from("workout_sessions")
+.select("id")
+.eq("user_id", user.id)
+.eq(
+"workout_template_id",
+Number(templateId)
+)
+.lt(
+"started_at",
+startOfToday.toISOString()
+)
+.order("started_at", {
+ascending: false
+})
+.limit(1)
+.maybeSingle();
 
-    // Buscar la última sesión realizada con esta rutina
+if (sessionError) {
 
-    const { data: lastSession, error: sessionError } =
-        await supabaseClient
-            .from("workout_sessions")
-            .select("id")
-            .eq("user_id", user.id)
-            .eq("workout_template_id", templateId)
-            .order("started_at", { ascending: false })
-            .limit(1)
-            .maybeSingle();
+console.error(
+"Error buscando la última sesión:",
+sessionError
+);
 
+return;
+}
 
-    if (sessionError) {
+if (!lastSession) {
 
-        console.error(
-            "Error buscando la última sesión:",
-            sessionError
-        );
+console.log(
+"No hay una sesión anterior para esta rutina."
+);
 
-        return;
-    }
+return;
+}
 
+const {
+data: sets,
+error: setsError
+} = await supabaseClient
+.from("workout_sets")
+.select("*")
+.eq(
+"workout_session_id",
+lastSession.id
+)
+.order("exercise_name", {
+ascending: true
+})
+.order("set_number", {
+ascending: true
+});
 
-    // Si nunca hemos hecho esta rutina,
-    // simplemente dejamos las casillas vacías
+if (setsError) {
 
-    if (!lastSession) {
+console.error(
+"Error cargando las series anteriores:",
+setsError
+);
 
-        console.log(
-            "No hay una sesión anterior para esta rutina."
-        );
+return;
+}
 
-        return;
-    }
+sets.forEach(set => {
 
+const exerciseItems =
+document.querySelectorAll(
+".gym-exercise"
+);
 
-    // Buscar las series de esa última sesión
+exerciseItems.forEach(item => {
 
-    const { data: sets, error: setsError } =
-        await supabaseClient
-            .from("workout_sets")
-            .select("*")
-            .eq("workout_session_id", lastSession.id)
-            .order("exercise_name", { ascending: true })
-            .order("set_number", { ascending: true });
+const exerciseTitle =
+item.querySelector("strong");
 
+if (!exerciseTitle) return;
 
-    if (setsError) {
+if (
+exerciseTitle.textContent.trim() !==
+set.exercise_name
+) {
+return;
+}
 
-        console.error(
-            "Error cargando las series anteriores:",
-            setsError
-        );
+const rows =
+item.querySelectorAll(".gym-set-row");
 
-        return;
-    }
+const row =
+rows[set.set_number - 1];
 
-
-    // Rellenar los campos de cada ejercicio
-
-    sets.forEach(set => {
-
-        // Buscar todos los ejercicios visibles
-        // y encontrar el que corresponde
-
-        const exerciseItems =
-            document.querySelectorAll(".gym-exercise");
-
-
-        exerciseItems.forEach(item => {
-
-            const exerciseTitle =
-                item.querySelector("strong");
-
-            if (!exerciseTitle) return;
-
-
-            // Comprobar que es el ejercicio correcto
-
-            if (
-                exerciseTitle.textContent.trim() !==
-                set.exercise_name
-            ) {
-                return;
-            }
-
-
-            // Obtener las filas de series
-
-            const rows =
-                item.querySelectorAll(".gym-set-row");
-
-
-            // La serie 1 corresponde al índice 0,
-            // la serie 2 al índice 1, etc.
-
-            const row =
-                rows[set.set_number - 1];
-
-            if (!row) return;
-
-
-            // Rellenar peso
-
-// Mostrar peso de la sesión anterior como referencia
+if (!row) return;
 
 const weightInput =
-    row.querySelector(".gym-weight");
+row.querySelector(".gym-weight");
 
 if (
-    weightInput &&
-    set.weight_kg !== null
+weightInput &&
+set.weight_kg !== null
 ) {
-    weightInput.placeholder =
-        `${set.weight_kg} kg`;
+weightInput.placeholder =
+`${set.weight_kg} kg`;
 }
-
-
-
-// Mostrar repeticiones de la sesión anterior como referencia
 
 const repsInput =
-    row.querySelector(".gym-reps");
+row.querySelector(".gym-reps");
 
 if (
-    repsInput &&
-    set.repetitions !== null
+repsInput &&
+set.repetitions !== null
 ) {
-    repsInput.placeholder =
-        `${set.repetitions}`;
+repsInput.placeholder =
+`${set.repetitions}`;
+}
+
+});
+
+});
 }
 
 
-        });
-    });
-}
 
 // =====================================================
 // CARGAR PESO DE HOY
@@ -2452,14 +2443,23 @@ async function editWorkout(workoutId) {
         gymForm.hidden = false;
         otherWorkoutForm.hidden = true;
 
-        await loadGymTemplates();
+await loadGymTemplates();
 
-        gymTemplate.value =
-            workout.workout_template_id || "";
+gymTemplate.value =
+workout.workout_template_id || "";
 
-        await loadGymExercises();
+await loadGymExercises();
 
-        await loadGymSessionSets(workout.id);
+// Cargar como referencia la última sesión
+// anterior a hoy
+
+await loadLastGymSession();
+
+// Cargar los datos reales guardados
+// del entrenamiento que estamos editando
+
+await loadGymSessionSets(workout.id);
+
 
     } else {
 
