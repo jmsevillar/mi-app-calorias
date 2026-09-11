@@ -2662,7 +2662,7 @@ async function loadTodayMeals() {
     const startOfSevenDaysAgo = new Date(
         now.getFullYear(),
         now.getMonth(),
-        now.getDate() - 6
+        now.getDate() - 7
     );
 
 
@@ -2679,7 +2679,7 @@ async function loadTodayMeals() {
             )
             .lt(
                 "eaten_at",
-                startOfTomorrow.toISOString()
+                startOfDay.toISOString()
             );
 
 
