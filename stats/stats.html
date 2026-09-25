@@ -1,0 +1,107 @@
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>HISTÓRICO</title>
+
+    <link
+        rel="stylesheet"
+        href="stats.css"
+    >
+
+</head>
+
+
+<body>
+
+    <main class="stats-container">
+
+        <div class="stats-header">
+
+            <div>
+
+                <h1>HISTÓRICO</h1>
+
+                <p>
+                    Últimos 30 días
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <section class="stats-card">
+
+            <div
+                id="stats-message"
+                class="stats-message"
+            >
+                Cargando...
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table id="stats-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Día</th>
+
+                            <th>Fecha</th>
+
+                            <th>Calorías</th>
+
+                            <th>Peso</th>
+
+                            <th>Entrenamiento</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="stats-table-body">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ========================================= -->
+    <!-- SUPABASE                                  -->
+    <!-- ========================================= -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    ></script>
+
+
+    <!-- ========================================= -->
+    <!-- JAVASCRIPT DE STATS                      -->
+    <!-- ========================================= -->
+
+    <script src="stats.js"></script>
+
+</body>
+
+</html>
+```

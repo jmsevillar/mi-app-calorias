@@ -1,0 +1,294 @@
+/* =====================================================
+   ESTILO GENERAL
+   ===================================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    background: #f3faf6;
+    color: #234236;
+}
+
+
+/* =====================================================
+   CONTENEDOR PRINCIPAL
+   ===================================================== */
+
+.stats-container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+
+/* =====================================================
+   CABECERA
+   ===================================================== */
+
+.stats-header {
+    margin-bottom: 20px;
+}
+
+.stats-header h1 {
+    margin: 0;
+    color: #234236;
+    font-size: 28px;
+}
+
+.stats-header p {
+    margin: 5px 0 0;
+    color: #557064;
+    font-size: 14px;
+}
+
+
+/* =====================================================
+   TARJETA DE STATS
+   ===================================================== */
+
+.stats-card {
+    background: #ffffff;
+    border: 1px solid #cfe8da;
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 16px;
+}
+
+
+/* =====================================================
+   MENSAJE
+   ===================================================== */
+
+.stats-message {
+    margin-bottom: 14px;
+    color: #557064;
+    font-size: 14px;
+}
+
+
+/* =====================================================
+   CONTENEDOR DE TABLA
+   ===================================================== */
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+
+/* =====================================================
+   TABLA
+   ===================================================== */
+
+#stats-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 650px;
+}
+
+
+/* =====================================================
+   CABECERA DE TABLA
+   ===================================================== */
+
+#stats-table thead {
+    background: #e2f1e8;
+}
+
+#stats-table th {
+    padding: 12px 10px;
+    text-align: left;
+    color: #234236;
+    font-size: 14px;
+    font-weight: 600;
+    border-bottom: 1px solid #cfe8da;
+    white-space: nowrap;
+}
+
+
+/* =====================================================
+   FILAS
+   ===================================================== */
+
+#stats-table tbody tr {
+    border-bottom: 1px solid #e1eee6;
+    transition: background 0.15s ease;
+}
+
+#stats-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+#stats-table tbody tr:hover {
+    background: #f6fbf8;
+}
+
+
+/* =====================================================
+   CELDAS
+   ===================================================== */
+
+#stats-table td {
+    padding: 13px 10px;
+    color: #234236;
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+
+/* =====================================================
+   DÍA
+   ===================================================== */
+
+#stats-table td:first-child {
+    font-weight: 600;
+    color: #557064;
+}
+
+
+/* =====================================================
+   FECHA
+   ===================================================== */
+
+#stats-table td:nth-child(2) {
+    color: #6b8177;
+}
+
+
+/* =====================================================
+   CALORÍAS
+   ===================================================== */
+
+#stats-table td:nth-child(3) {
+    font-weight: 600;
+    color: #234236;
+}
+
+
+/* =====================================================
+   PESO
+   ===================================================== */
+
+#stats-table td:nth-child(4) {
+    font-weight: 700;
+}
+
+
+/*
+   Estas clases las utilizará stats.js:
+
+   .weight-up
+   .weight-down
+   .weight-same
+*/
+
+#stats-table .weight-up {
+    color: #dc3545;
+}
+
+#stats-table .weight-down {
+    color: #198754;
+}
+
+#stats-table .weight-same {
+    color: #557064;
+}
+
+
+/* =====================================================
+   ENTRENAMIENTO
+   ===================================================== */
+
+#stats-table td:nth-child(5) {
+    font-weight: 600;
+    color: #234236;
+}
+
+
+/* =====================================================
+   ETIQUETA DE ENTRENAMIENTO
+   ===================================================== */
+
+.workout-badge {
+    display: inline-block;
+    padding: 5px 9px;
+    border-radius: 8px;
+    background: #e2f1e8;
+    color: #198754;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+
+/* =====================================================
+   SIN ENTRENAMIENTO
+   ===================================================== */
+
+.no-workout {
+    color: #8a9a92;
+    font-weight: 400;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
+
+@media (max-width: 700px) {
+
+    body {
+        padding: 12px;
+    }
+
+    .stats-container {
+        max-width: 100%;
+    }
+
+    .stats-card {
+        padding: 12px;
+        border-radius: 14px;
+    }
+
+    .stats-header h1 {
+        font-size: 25px;
+    }
+
+    #stats-table th,
+    #stats-table td {
+        padding: 11px 8px;
+    }
+}
+
+
+/* =====================================================
+   MÓVIL
+   ===================================================== */
+
+@media (max-width: 480px) {
+
+    body {
+        padding: 10px;
+    }
+
+    .stats-card {
+        padding: 10px;
+    }
+
+    .stats-header {
+        margin-bottom: 14px;
+    }
+
+    .stats-header h1 {
+        font-size: 24px;
+    }
+
+    #stats-table {
+        min-width: 600px;
+    }
+}
