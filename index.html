@@ -31,39 +31,66 @@
 
 <header class="app-header">
 
-    <div class="app-header-info">
+<header class="app-header">
+<div class="app-header-info">
 
-        <div class="header-date-row">
-            <h1 id="current-date"></h1>
+    <div class="header-date-row">
 
-            <button id="logout-button">
-                Salir
-            </button>
-        </div>
+        <h1 id="current-date"></h1>
 
-        <div class="header-second-row">
+        <button id="logout-button">
+            Salir
+        </button>
+
+    </div>
+
+    <div class="header-second-row">
+
+        <div class="header-user-info">
 
             <p id="user-email"></p>
 
-            <div class="header-weight">
+            <button
+                id="calendar-button"
+                class="edit-weight-button"
+                type="button"
+                title="Seleccionar fecha"
+                aria-label="Seleccionar fecha"
+            >
+                📅
+            </button>
 
-                <span class="header-weight-label">
-                    Peso
-                </span>
+            <input
+                type="date"
+                id="selected-date"
+                hidden
+            >
 
-                <div class="header-weight-value">
-                    <strong id="current-weight">0</strong>
-                    <span>kg</span>
+        </div>
 
-                    <button
-                        id="edit-weight-button"
-                        class="edit-weight-button"
-                        title="Editar peso"
-                        aria-label="Editar peso"
-                    >
-                        ✏️
-                    </button>
-                </div>
+        <div class="header-weight">
+
+            <span class="header-weight-label">
+                Peso
+            </span>
+
+            <div class="header-weight-value">
+
+                <strong id="current-weight">
+                    0
+                </strong>
+
+                <span>kg</span>
+
+                <button
+                    id="edit-weight-button"
+                    class="edit-weight-button"
+                    type="button"
+                    title="Editar peso"
+                    aria-label="Editar peso"
+                >
+                    ✏️
+                </button>
 
             </div>
 
@@ -71,7 +98,11 @@
 
     </div>
 
+</div>
+
 </header>
+</header>
+
 
 
 

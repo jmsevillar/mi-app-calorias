@@ -89,6 +89,84 @@ const currentWeight =
 
 const editWeightButton =
     document.getElementById("edit-weight-button");
+	
+// ==========================================
+// CALENDARIO / FECHA SELECCIONADA
+// ==========================================
+
+const calendarButton =
+    document.getElementById("calendar-button");
+
+const calendarInput =
+    document.getElementById("selected-date");
+
+
+// Fecha que estamos visualizando.
+// Por defecto: HOY.
+
+let selectedDate = new Date();
+
+
+// =====================================================
+// BOTÓN CALENDARIO
+// =====================================================
+
+if (calendarButton && calendarInput) {
+
+    calendarButton.addEventListener("click", () => {
+
+        // Poner la fecha seleccionada en el input
+        calendarInput.value =
+            getDateInputValue(selectedDate);
+
+        // Quitar temporalmente hidden para poder abrirlo
+        calendarInput.hidden = false;
+
+        try {
+
+            if (
+                typeof calendarInput.showPicker === "function"
+            ) {
+
+                calendarInput.showPicker();
+
+            } else {
+
+                calendarInput.focus();
+                calendarInput.click();
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Error abriendo calendario:",
+                error
+            );
+
+            calendarInput.focus();
+            calendarInput.click();
+        }
+
+    });
+
+
+    calendarInput.addEventListener("change", async () => {
+
+        if (!calendarInput.value) {
+            return;
+        }
+
+        await changeSelectedDate(
+            calendarInput.value
+        );
+
+        // Volver a ocultarlo después de seleccionar
+        calendarInput.hidden = true;
+
+    });
+
+}
 
 
 // ==========================================
@@ -580,19 +658,10 @@ async function loadGymExercises() {
                         // BUSCAR EL ENTRENAMIENTO DE HOY
                         // =====================================================
 
-                        const now = new Date();
-
-                        const startOfDay = new Date(
-                            now.getFullYear(),
-                            now.getMonth(),
-                            now.getDate()
-                        );
-
-                        const startOfTomorrow = new Date(
-                            now.getFullYear(),
-                            now.getMonth(),
-                            now.getDate() + 1
-                        );
+const {
+    startOfDay,
+    startOfTomorrow
+} = getSelectedDayRange();
 
 
                         const {
@@ -869,19 +938,10 @@ async function saveGymExercise(exerciseItem) {
 
     // Buscar la sesión de hoy para esta rutina
 
-    const now = new Date();
-
-    const startOfDay = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate()
-    );
-
-    const startOfTomorrow = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate() + 1
-    );
+const {
+    startOfDay,
+    startOfTomorrow
+} = getSelectedDayRange();
 
     const { data: todaySession, error: sessionError } =
         await supabaseClient
@@ -1188,10 +1248,10 @@ repsInput.placeholder =
 
 
 // =====================================================
-// CARGAR PESO DE HOY
+// CARGAR PESO DEL DÍA SELECCIONADO
 // =====================================================
 
-async function loadTodayWeight() {
+async function loadSelectedWeight() {
 
     const {
         data: { user }
@@ -1199,19 +1259,10 @@ async function loadTodayWeight() {
 
     if (!user) return;
 
-    const now = new Date();
-
-    const startOfDay = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate()
-    );
-
-    const startOfTomorrow = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate() + 1
-    );
+    const {
+        startOfDay,
+        startOfTomorrow
+    } = getSelectedDayRange();
 
     const { data: weight, error } =
         await supabaseClient
@@ -1235,7 +1286,7 @@ async function loadTodayWeight() {
     if (error) {
 
         console.error(
-            "Error cargando el peso de hoy:",
+            "Error cargando el peso:",
             error
         );
 
@@ -1256,6 +1307,7 @@ async function loadTodayWeight() {
         currentWeight.textContent = "0";
     }
 }
+
 
 // =====================================================
 // EDITAR PESO
@@ -1303,7 +1355,15 @@ editWeightButton.addEventListener("click", async () => {
             .insert({
                 user_id: user.id,
                 weight_kg: weightValue,
-                measured_at: new Date().toISOString()
+                measured_at:
+    new Date(
+        selectedDate.getFullYear(),
+        selectedDate.getMonth(),
+        selectedDate.getDate(),
+        12,
+        0,
+        0
+    ).toISOString()
             });
 
     if (error) {
@@ -1318,7 +1378,8 @@ editWeightButton.addEventListener("click", async () => {
         return;
     }
 
-    await loadTodayWeight();
+  await loadSelectedWeight();
+
 });
 
 
@@ -1345,7 +1406,8 @@ async function showApp(user) {
 	await loadMealTemplates();
 	await loadWorkoutTypes();
 	await loadTodayWorkouts();
-	await loadTodayWeight();
+	await loadSelectedWeight();
+
 	
 }
 
@@ -1675,6 +1737,8 @@ saveWorkoutButton.addEventListener("click", async () => {
 
             // Estamos creando una sesión nueva
 
+const { startOfDay } = getSelectedDayRange();
+
             const { data: session, error: sessionError } =
                 await supabaseClient
                     .from("workout_sessions")
@@ -1682,7 +1746,7 @@ saveWorkoutButton.addEventListener("click", async () => {
                         user_id: user.id,
                         workout_type_id: workoutTypeData.id,
                         workout_template_id: Number(templateId),
-                        started_at: new Date().toISOString(),
+                        started_at: startOfDay.toISOString(),
                         notes: notes || null
                     })
                     .select("id")
@@ -1927,14 +1991,16 @@ saveWorkoutButton.addEventListener("click", async () => {
     } else {
 
         // Crear un entrenamiento nuevo
-
+		
+		const { startOfDay } = getSelectedDayRange();
+		
         const { error } =
             await supabaseClient
                 .from("workout_sessions")
                 .insert({
                     user_id: user.id,
                     workout_type_id: workoutTypeData.id,
-                    started_at: new Date().toISOString(),
+                    started_at: startOfDay.toISOString(),
                     duration_minutes: duration,
                     notes: notes || null
                 });
@@ -2051,14 +2117,17 @@ saveMealButton.addEventListener("click", async () => {
         return;
     }
 
-    const { error } =
-        await supabaseClient
-            .from("meal_entries")
-            .insert({
-                user_id: user.id,
-                calories: calories,
-                notes: name
-            });
+const { startOfDay } = getSelectedDayRange();
+
+const { error } =
+    await supabaseClient
+        .from("meal_entries")
+        .insert({
+            user_id: user.id,
+            calories: calories,
+            notes: name,
+            eaten_at: startOfDay.toISOString()
+        });
 
     if (error) {
         console.error(error);
@@ -2156,19 +2225,11 @@ async function loadTodayWorkouts() {
     // CALCULAR EL INICIO Y FINAL DEL DÍA
     // -------------------------------------------------
 
-    const now = new Date();
+const {
+    startOfDay,
+    startOfTomorrow
+} = getSelectedDayRange();
 
-    const startOfDay = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate()
-    );
-
-    const startOfTomorrow = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate() + 1
-    );
 
 
     // -------------------------------------------------
@@ -2581,6 +2642,158 @@ async function loadGymSessionSets(sessionId) {
     });
 }
 
+
+// =====================================================
+// FECHA SELECCIONADA
+// =====================================================
+
+function getDateInputValue(date) {
+
+    const year = date.getFullYear();
+
+    const month =
+        String(date.getMonth() + 1).padStart(2, "0");
+
+    const day =
+        String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+}
+
+
+// =====================================================
+// MOSTRAR FECHA EN EL HEADER
+// =====================================================
+
+function updateCurrentDate() {
+
+    const currentDateElement =
+        document.getElementById("current-date");
+
+    if (!currentDateElement) return;
+
+    const dateText =
+        selectedDate.toLocaleDateString("es-ES", {
+            day: "numeric",
+            month: "long",
+            year: "numeric"
+        });
+
+    currentDateElement.textContent = dateText;
+}
+
+
+// =====================================================
+// OBTENER INICIO Y FINAL DEL DÍA SELECCIONADO
+// =====================================================
+
+function getSelectedDayRange() {
+
+    const startOfDay = new Date(
+        selectedDate.getFullYear(),
+        selectedDate.getMonth(),
+        selectedDate.getDate()
+    );
+
+    const startOfTomorrow = new Date(
+        selectedDate.getFullYear(),
+        selectedDate.getMonth(),
+        selectedDate.getDate() + 1
+    );
+
+    return {
+        startOfDay,
+        startOfTomorrow
+    };
+}
+
+
+// =====================================================
+// CAMBIAR DE FECHA
+// =====================================================
+
+async function changeSelectedDate(dateValue) {
+
+    if (!dateValue) return;
+
+    const [year, month, day] =
+        dateValue.split("-").map(Number);
+
+    selectedDate = new Date(
+        year,
+        month - 1,
+        day
+    );
+
+    // Actualizar título
+
+    updateCurrentDate();
+
+    // Cargar datos del día seleccionado
+
+    await loadTodayMeals();
+    await loadTodayWorkouts();
+    await loadSelectedWeight();
+}
+
+// =====================================================
+// BOTÓN CALENDARIO
+// =====================================================
+
+if (calendarButton && calendarInput) {
+
+    calendarButton.addEventListener("click", () => {
+
+        // Poner siempre la fecha actualmente seleccionada
+        calendarInput.value =
+            getDateInputValue(selectedDate);
+
+        // Abrir el selector nativo de fecha
+        try {
+
+            if (typeof calendarInput.showPicker === "function") {
+
+                calendarInput.showPicker();
+
+            } else {
+
+                calendarInput.focus();
+                calendarInput.click();
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "No se pudo abrir el calendario:",
+                error
+            );
+
+            // Fallback
+            calendarInput.focus();
+            calendarInput.click();
+        }
+
+    });
+
+
+    // Cuando el usuario selecciona una fecha
+    calendarInput.addEventListener("change", async () => {
+
+        const selectedValue =
+            calendarInput.value;
+
+        if (!selectedValue) {
+            return;
+        }
+
+        await changeSelectedDate(selectedValue);
+
+    });
+
+}
+
+
 // =====================================================
 // CARGAR COMIDAS DE HOY Y ÚLTIMOS 7 DÍAS
 // =====================================================
@@ -2600,19 +2813,11 @@ async function loadTodayMeals() {
     // CALCULAR EL DÍA ACTUAL
     // =====================================================
 
-    const now = new Date();
+const {
+    startOfDay,
+    startOfTomorrow
+} = getSelectedDayRange();
 
-    const startOfDay = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate()
-    );
-
-    const startOfTomorrow = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate() + 1
-    );
 
 
     // =====================================================
@@ -2655,15 +2860,19 @@ async function loadTodayMeals() {
     renderMeals(todayMeals);
 
 
-    // =====================================================
-    // CALCULAR ÚLTIMOS 7 DÍAS
-    // =====================================================
+// =====================================================
+// CALCULAR ÚLTIMOS 7 DÍAS
+// =====================================================
 
-    const startOfSevenDaysAgo = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate() - 7
-    );
+const now = new Date();
+
+const startOfSevenDaysAgo = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() - 7
+);
+
+
 
 
     // Cargar todas las comidas de los últimos 7 días
@@ -3065,19 +3274,23 @@ async function addTemplateMeal(templateId) {
     }
 
 
-    const { error } =
-        await supabaseClient
-            .from("meal_entries")
-            .insert({
+const { startOfDay } = getSelectedDayRange();
 
-                user_id: user.id,
+const { error } =
+    await supabaseClient
+        .from("meal_entries")
+        .insert({
 
-                meal_template_id: template.id,
+            user_id: user.id,
 
-                calories: template.calories,
+            meal_template_id: template.id,
 
-                notes: template.name
-            });
+            calories: template.calories,
+
+            notes: template.name,
+
+            eaten_at: startOfDay.toISOString()
+        });
 
 
     if (error) {
@@ -3300,7 +3513,7 @@ function updateCalories(total) {
 
 
 // =====================================================
-// MOSTRAR FECHA ACTUAL
+// MOSTRAR FECHA SELECCIONADA
 // =====================================================
 
 function updateCurrentDate() {
@@ -3310,10 +3523,8 @@ function updateCurrentDate() {
 
     if (!currentDateElement) return;
 
-    const now = new Date();
-
     const dateText =
-        now.toLocaleDateString("es-ES", {
+        selectedDate.toLocaleDateString("es-ES", {
             day: "numeric",
             month: "long",
             year: "numeric"
@@ -3321,8 +3532,6 @@ function updateCurrentDate() {
 
     currentDateElement.textContent = dateText;
 }
-
-
 
 
 // ==========================================
